@@ -33,6 +33,10 @@ const routes: Routes = [
   { //edit internship
     path: 'internship/:id',
     component: InternshipEntryComponent
+  },
+  { //edit internship
+    path: 'internship/:id/:name',
+    component: InternshipEntryComponent
   }
 ];
 

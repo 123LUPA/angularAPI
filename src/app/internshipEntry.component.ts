@@ -7,6 +7,7 @@ import {
 import {InternshipValidators} from "./internship.validators";
 import { ActivatedRoute, Params } from '@angular/router';
 import {InternshipsService} from "./internships.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'internship-entry',
@@ -22,10 +23,13 @@ import {InternshipsService} from "./internships.service";
           <label for="initials">Initials</label>
           <input type="text"
                  id="initials"
+                 [value]="name"
                  placeholder="Initials"
-                 [formControl]="internshipForm.controls['initials']"
-                 class="form-control" value="{{selectedInternship?.initials}}">
-                 
+                 class="form-control"
+                                  [formControl]="internshipForm.controls['initials']"
+
+                 >
+
            <p *ngIf="!internshipForm.controls.initials.valid"
               class="help-block">
               Initials are invalid
@@ -53,15 +57,37 @@ import {InternshipsService} from "./internships.service";
   `
 })
 export class InternshipEntryComponent implements OnInit {
+  private internships: any[] = [];
+  private internships1: any[] = [];
+
+  private errorMessage: string = "";
     internshipForm: FormGroup;
     selectedInternship: any;
+  private subscription : Subscription;
+  private  name: string = '';
+  id: string = '';
+
+
 
     ngOnInit():void {
-        this.route.params.forEach((params: Params) => {
-            let id = +params['id'];
-            this.selectedInternship = this.internshipsService.getInternship(id);
-            console.log(this.selectedInternship);
-        });
+
+
+      this.route.params.forEach((params: Params) => {
+        let id = params['id'];
+        let name = params['name'];
+        // this.selectedInternship = this.internshipsService.getInternship(id);
+          if(id==null&&name==null){
+          }else {
+            this.id=id;
+            this.name = name;
+          }
+
+
+
+        console.log(this.id + this.name);
+
+
+      });
 
         this.internshipForm = this.fb.group( {
             'initials': ['', Validators.compose([
@@ -86,7 +112,20 @@ export class InternshipEntryComponent implements OnInit {
 
   public onSubmit(form) {
     if (form.valid) {
-      console.log("yes, send data to server");
+       if(this.id===''){
+         this.internshipsService.addInternship(form.value.initials).subscribe(
+           internships => this.internships = internships,
+           error => this.errorMessage = error
+         );
+       }else {
+         this.internshipsService.update(this.id,form.value.initials).subscribe(
+           internships => this.internships = internships,
+           error => this.errorMessage = error
+         );
+       }
+
+
+
     }
     else {
       console.log("there was an error.")

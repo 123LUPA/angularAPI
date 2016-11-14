@@ -1,13 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {InternshipsService} from "./internships.service";
 import { Router } from '@angular/router';
+import {Response} from "@angular/http";
 
 @Component({
     selector: 'internships',
     template: `
 
-    <div *ngFor="let internship of internships" (click)="gotoInternship(internship)">
+    <div *ngFor="let internship of internships" >
         {{internship.initials}}
+        <button (click)="delete(internship)">Delete</button>
+        <button (click)="update(internship)">UPDATE</button>
     </div>
 
     <button routerLink="a">Goto A component</button>
@@ -21,6 +24,7 @@ import { Router } from '@angular/router';
 
 export class InternshipsComponent implements OnInit {
     private internships: any[] = [];
+    private id: any[] = [];
     private errorMessage: string = "";
 
     ngOnInit():void {
@@ -41,6 +45,25 @@ export class InternshipsComponent implements OnInit {
 
       let link = ['/internship', internship._id];
       this.router.navigate(link);
+
+  }
+
+  delete(internship){
+
+      this.internshipsService.delete(internship._id).subscribe(
+      id => this.id = id,
+      error => this.errorMessage = error
+    );
+
+  }
+
+  update(intership){
+
+
+
+    console.log(intership.initials);
+    let link = ['/internship', intership._id, intership.initials];
+    this.router.navigate(link);
 
   }
 }
